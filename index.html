@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Soda Todo - 視角切換版</title>
+    <title>Soda Todo - 大螢幕優化版</title>
     <style>
         :root {
             --bg-blue: #D1E9FF;
@@ -22,122 +22,157 @@
             background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
                               linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
             background-size: 20px 20px;
-            font-family: -apple-system, sans-serif;
-            margin: 0; padding: 10px; display: flex; justify-content: center;
+            font-family: -apple-system, "Microsoft JhengHei", sans-serif;
+            margin: 0; padding: 20px; display: flex; justify-content: center;
         }
 
+        /* 統一容器：電腦與手機皆為單欄切換模式 */
         .container {
-            width: 100%; max-width: 500px; background: white;
-            padding: 20px; border-radius: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 1200px; /* 電腦版放寬至 1200px，讓象限極大化 */
+            background: white;
+            padding: 30px;
+            border-radius: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             box-sizing: border-box;
         }
 
-        /* 頂部切換 */
-        .tab-group { display: flex; gap: 8px; margin-bottom: 15px; }
+        /* 電腦版字體與佈局微調 */
+        @media (min-width: 800px) {
+            .tab-btn { font-size: 20px !important; padding: 18px !important; }
+            .quad-title { font-size: 22px !important; margin-bottom: 20px !important; }
+            .list-item { font-size: 17px !important; padding: 15px !important; }
+            .day-item { min-width: 80px !important; font-size: 18px !important; }
+            .matrix { gap: 20px !important; } /* 增加象限間距 */
+            .quadrant { min-height: 250px !important; padding: 20px !important; }
+        }
+
+        /* 頂部類別 */
+        .tab-group { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab-btn {
-            flex: 1; padding: 12px; border-radius: 15px; border: none;
+            flex: 1; padding: 12px; border-radius: 18px; border: none;
             background: #F5F5F5; cursor: pointer; font-size: 16px; font-weight: bold; color: #AAA;
         }
         .tab-btn.active { background: var(--soft-blue); color: white; }
 
-        /* 視角切換器 */
-        .view-switcher {
-            display: flex; background: #EEE; border-radius: 12px; padding: 4px; margin-bottom: 15px;
-        }
+        /* 視角切換：電腦與手機均顯示 */
+        .view-switcher { display: flex; background: #EEE; border-radius: 15px; padding: 5px; margin-bottom: 20px; }
         .view-btn {
-            flex: 1; border: none; background: none; padding: 8px; border-radius: 10px;
-            font-size: 14px; font-weight: bold; color: #777; cursor: pointer;
+            flex: 1; border: none; background: none; padding: 12px; border-radius: 12px;
+            font-size: 16px; font-weight: bold; color: #777; cursor: pointer;
         }
         .view-btn.active { background: white; color: var(--text-dark); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-        /* 週曆控制 */
-        .calendar-area { display: block; }
-        .calendar-ctrl { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-        .nav-btn { background: none; border: none; font-size: 22px; color: var(--soft-blue); cursor: pointer; }
-        .week-calendar { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .filter-group { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; }
+        .filter-btn {
+            padding: 8px 18px; border-radius: 25px; border: 1px solid #EEE;
+            background: white; font-size: 14px; color: #888; cursor: pointer;
+        }
+        .filter-btn.active { background: #455A64; color: white; border-color: #455A64; }
+
+        /* 週曆 */
+        .calendar-ctrl { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .nav-btn { background: none; border: none; font-size: 28px; color: var(--soft-blue); cursor: pointer; }
+        .week-calendar { display: flex; justify-content: space-between; margin-bottom: 20px; }
         .day-item {
             display: flex; flex-direction: column; align-items: center;
-            min-width: 42px; padding: 8px 0; border-radius: 12px; cursor: pointer;
+            min-width: 45px; padding: 10px 0; border-radius: 15px; cursor: pointer;
         }
         .day-item.active { background-color: #FF8A80; color: white; }
 
-        /* 四象限矩陣 */
-        .matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .quadrant { padding: 12px; border-radius: 20px; min-height: 150px; }
-        .quad-title { font-size: 11px; font-weight: bold; margin-bottom: 8px; color: rgba(0,0,0,0.3); text-align: center; }
+        /* 四象限矩陣：100% 寬度 */
+        .matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .quadrant { padding: 15px; border-radius: 25px; min-height: 200px; }
+        .quad-title { font-size: 16px; font-weight: 800; margin-bottom: 12px; color: #546E7A; text-align: center; }
         .q1 { background: var(--urgent-pink); } .q2 { background: var(--important-yellow); }
         .q3 { background: var(--delegate-blue); } .q4 { background: var(--waste-green); }
 
-        /* 總覽清單視角 */
-        #overview-list { display: none; margin-bottom: 20px; max-height: 400px; overflow-y: auto; }
-        .date-group-title { font-size: 12px; color: #999; margin: 15px 0 5px 5px; border-left: 3px solid var(--soft-blue); padding-left: 8px; }
-
-        /* 任務條目 */
+        /* 任務列表 */
         .list-item { 
-            background: rgba(255,255,255,0.8); margin-bottom: 6px; padding: 10px; border-radius: 12px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            background: rgba(255,255,255,0.85); margin-bottom: 10px; padding: 12px; border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         }
-        .task-row { display: flex; align-items: center; gap: 8px; }
+        .task-row { display: flex; align-items: center; gap: 10px; }
         .completed { text-decoration: line-through; opacity: 0.4; }
-        .due-tag { font-size: 10px; color: #777; background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 6px; margin-top: 5px; display: inline-block; }
-        .overdue-label { color: white; background: var(--due-red); padding: 1px 4px; border-radius: 3px; margin-right: 5px; font-size: 10px; }
-
-        /* 輸入區 */
-        .input-panel { background: #F8FDFF; border: 2px solid #E3F2FD; padding: 15px; border-radius: 25px; }
-        .input-panel input, .input-panel select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #DDD; margin-bottom: 8px; box-sizing: border-box; font-size: 16px; }
-        .add-btn { background: var(--soft-blue); color: white; border: none; font-weight: bold; cursor: pointer; width: 100%; padding: 14px; border-radius: 12px; }
         
-        #status { text-align: center; font-size: 11px; color: #BBB; margin-top: 10px; }
+        .due-tag { font-size: 12px; color: #666; background: rgba(0,0,0,0.06); padding: 4px 10px; border-radius: 8px; margin-top: 8px; display: inline-block; }
+        .overdue-label { color: white; background: var(--due-red); padding: 2px 8px; border-radius: 6px; margin-right: 8px; font-size: 12px; font-weight: bold; }
+        .date-group-title { font-size: 15px; color: #999; margin: 25px 0 10px 0; border-left: 5px solid var(--soft-blue); padding-left: 12px; font-weight: bold; }
+
+        /* 輸入面板 */
+        .input-panel { background: #F8FDFF; border: 2px solid #E3F2FD; padding: 20px; border-radius: 30px; margin-top: 20px; }
+        .input-row { display: flex; flex-wrap: wrap; gap: 15px; }
+        .input-main { flex: 3; min-width: 300px; }
+        .input-sub { flex: 1; min-width: 160px; }
+        .input-panel input, .input-panel select { 
+            width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #DDD; 
+            margin-top: 6px; box-sizing: border-box; font-size: 16px; 
+        }
+        .input-label { font-size: 12px; color: #90CAF9; font-weight: bold; margin-left: 5px; }
+        .add-btn { background: var(--soft-blue); color: white; border: none; font-weight: bold; cursor: pointer; width: 100%; padding: 18px; border-radius: 18px; font-size: 18px; margin-top: 15px; }
+        
+        #overview-list { display: none; max-height: 600px; overflow-y: auto; padding: 10px; }
+        #status { text-align: center; font-size: 13px; color: #BBB; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="tab-group">
-        <button id="tab-工作" class="tab-btn active" onclick="switchTab('工作')">💼 工作</button>
-        <button id="tab-家庭" class="tab-btn" onclick="switchTab('家庭')">🏠 家庭</button>
+        <button id="tab-工作" class="tab-btn active" onclick="switchTab('工作')">💼 工作模式</button>
+        <button id="tab-家庭" class="tab-btn" onclick="switchTab('家庭')">🏠 家庭模式</button>
     </div>
 
     <div class="view-switcher">
-        <button class="view-btn active" id="btn-day" onclick="switchView('day')">日視角 (象限)</button>
-        <button class="view-btn" id="btn-all" onclick="switchView('all')">總覽 (全部待辦)</button>
+        <button class="view-btn active" id="btn-day" onclick="switchView('day')">日視角 (四象限專注)</button>
+        <button class="view-btn" id="btn-all" onclick="switchView('all')">清單總覽 (所有日期)</button>
+    </div>
+
+    <div class="filter-group">
+        <button class="filter-btn active" id="filter-all" onclick="setFilter('all')">顯示全部</button>
+        <button class="filter-btn" id="filter-pending" onclick="setFilter('pending')">只看待辦</button>
+        <button class="filter-btn" id="filter-done" onclick="setFilter('done')">只看已完成</button>
     </div>
 
     <div id="day-area">
         <div class="calendar-ctrl">
             <button class="nav-btn" onclick="changeWeek(-7)">＜</button>
-            <div id="monthLabel" class="month-label" onclick="goToday()">2026年 3月</div>
+            <div id="monthLabel" style="font-weight: bold; font-size: 20px; cursor:pointer;" onclick="goToday()">2026年 3月</div>
             <button class="nav-btn" onclick="changeWeek(7)">＞</button>
         </div>
         <div class="week-calendar" id="weekBar"></div>
         <div class="matrix">
             <div class="quadrant q1"><div class="quad-title">重要 & 緊急</div><div id="list-Q1"></div></div>
-            <div class="quadrant q2"><div class="quad-title">重要 & 不緊急</div><div id="list-Q2"></div></div>
-            <div class="quadrant q3"><div class="quad-title">緊急 & 不重要</div><div id="list-Q3"></div></div>
-            <div class="quadrant q4"><div class="quad-title">不重要 & 不緊急</div><div id="list-Q4"></div></div>
+            <div class="quadrant q2"><div class="quad-title">重要 & 不急</div><div id="list-Q2"></div></div>
+            <div class="quadrant q3"><div class="quad-title">不重要 & 緊急</div><div id="list-Q3"></div></div>
+            <div class="quadrant q4"><div class="quad-title">不重要 & 不急</div><div id="list-Q4"></div></div>
         </div>
     </div>
 
     <div id="overview-list"></div>
 
     <div class="input-panel">
-        <input type="text" id="todoInput" placeholder="新的任務內容...">
-        <div style="display:flex; gap:8px;">
-            <div style="flex:1">
-                <label style="font-size:10px; color:#999; margin-left:5px;">截止日期</label>
-                <input type="date" id="dueInput" style="margin-bottom:0">
+        <div class="input-row">
+            <div class="input-main">
+                <span class="input-label">任務名稱</span>
+                <input type="text" id="todoInput" placeholder="輸入任務...">
             </div>
-            <div style="flex:1">
-                <label style="font-size:10px; color:#999; margin-left:5px;">優先級</label>
-                <select id="quadInput" style="margin-bottom:0">
-                    <option value="Q1">粉：重/急</option><option value="Q2">黃：重/不急</option>
-                    <option value="Q3">藍：急/重</option><option value="Q4">綠：不重</option>
+            <div class="input-sub">
+                <span class="input-label">截止日期 (選填)</span>
+                <input type="date" id="dueInput">
+            </div>
+            <div class="input-sub">
+                <span class="input-label">優先級別</span>
+                <select id="quadInput">
+                    <option value="Q1">粉色：重要且緊急</option><option value="Q2">黃色：重要不緊急</option>
+                    <option value="Q3">藍色：緊急不重要</option><option value="Q4">綠色：不重要不緊急</option>
                 </select>
             </div>
         </div>
-        <button class="add-btn" onclick="addTodo()" style="margin-top:10px;">加入當前日期</button>
+        <button class="add-btn" onclick="addTodo()">＋ 新增任務到行事曆選定日</button>
     </div>
-    <div id="status">● 準備就緒</div>
+    
+    <div id="status">● 雲端連線中</div>
 </div>
 
 <script>
@@ -147,11 +182,20 @@
     let selectedDateStr = new Date().toLocaleDateString();
     let currentTab = localStorage.getItem('soda_last_tab') || '工作';
     let currentView = 'day'; 
+    let currentFilter = 'all';
 
     const local = localStorage.getItem('soda_v7_data');
     if (local) todos = JSON.parse(local);
 
     function showStatus(msg) { document.getElementById('status').innerText = msg; }
+
+    function checkOverdue(item) {
+        if (!item.due || item.done) return false;
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const dueDate = new Date(item.due);
+        return dueDate < today;
+    }
 
     function switchTab(tab) {
         currentTab = tab;
@@ -168,6 +212,19 @@
         document.getElementById('day-area').style.display = (view === 'day') ? 'block' : 'none';
         document.getElementById('overview-list').style.display = (view === 'all') ? 'block' : 'none';
         render();
+    }
+
+    function setFilter(filter) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`filter-${filter}`).classList.add('active');
+        render();
+    }
+
+    function filterItems(items) {
+        if (currentFilter === 'pending') return items.filter(t => !t.done);
+        if (currentFilter === 'done') return items.filter(t => t.done);
+        return items;
     }
 
     function changeWeek(days) { baseDate.setDate(baseDate.getDate() + days); initCalendar(); }
@@ -209,11 +266,8 @@
     }
 
     function render() {
-        if (currentView === 'day') {
-            renderDayView();
-        } else {
-            renderAllView();
-        }
+        if (currentView === 'day') renderDayView();
+        else renderAllView();
     }
 
     function renderDayView() {
@@ -222,6 +276,7 @@
             const div = document.getElementById(`list-${q}`);
             div.innerHTML = '';
             let filtered = todos.filter(t => t.date === selectedDateStr && t.quad === q && t.type === currentTab);
+            filtered = filterItems(filtered);
             filtered.forEach(item => {
                 const idx = todos.indexOf(item);
                 div.innerHTML += createItemHTML(item, idx);
@@ -231,48 +286,44 @@
 
     function renderAllView() {
         const container = document.getElementById('overview-list');
-        container.innerHTML = '<h3 style="font-size:14px; margin-bottom:10px;">所有未完成任務 (工作+家庭)</h3>';
-        
-        // 抓出所有未完成的
-        let pending = todos.filter(t => !t.done && t.type === currentTab);
-        
-        // 按日期排序
-        pending.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        if (pending.length === 0) {
-            container.innerHTML += '<p style="color:#CCC; text-align:center; margin-top:30px;">目前沒有待辦事項！</p>';
-            return;
-        }
+        container.innerHTML = `<h3 style="font-size:20px; margin-bottom:15px; color:#546E7A">📋 ${currentTab} 清單</h3>`;
+        let list = todos.filter(t => t.type === currentTab);
+        list = filterItems(list);
+        list.sort((a, b) => new Date(a.date) - new Date(b.date));
 
         let lastDate = "";
-        pending.forEach(item => {
+        list.forEach(item => {
             if (item.date !== lastDate) {
                 container.innerHTML += `<div class="date-group-title">${item.date === new Date().toLocaleDateString() ? "📅 今天" : item.date}</div>`;
                 lastDate = item.date;
             }
             const idx = todos.indexOf(item);
-            const isOverdue = new Date(item.date) < new Date(new Date().toLocaleDateString());
+            const overdue = checkOverdue(item);
             container.innerHTML += `
-                <div class="list-item" style="border-left: 5px solid var(--${item.quad.toLowerCase() === 'q1' ? 'urgent-pink' : item.quad.toLowerCase() === 'q2' ? 'important-yellow' : item.quad.toLowerCase() === 'q3' ? 'delegate-blue' : 'waste-green'})">
+                <div class="list-item" style="border-left: 8px solid var(--${item.quad.toLowerCase() === 'q1' ? 'urgent-pink' : item.quad.toLowerCase() === 'q2' ? 'important-yellow' : item.quad.toLowerCase() === 'q3' ? 'delegate-blue' : 'waste-green'})">
                     <div class="task-row">
-                        <input type="checkbox" onchange="toggleDone(${idx})">
-                        <span style="flex:1">${isOverdue ? '<span class="overdue-label">逾期</span>' : ''}${item.text}</span>
+                        <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleDone(${idx})">
+                        <span class="${item.done ? 'completed' : ''}" style="flex:1">${overdue ? '<span class="overdue-label">逾期</span>' : ''}${item.text}</span>
                         <span onclick="deleteTask(${idx})" style="color:#CCC; cursor:pointer;">×</span>
                     </div>
+                    ${item.due ? `<div class="due-tag">📅 截止日: ${item.due}</div>` : ''}
                 </div>
             `;
         });
     }
 
     function createItemHTML(item, idx) {
+        const overdue = checkOverdue(item);
         return `
             <div class="list-item">
                 <div class="task-row">
                     <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleDone(${idx})">
-                    <span class="${item.done ? 'completed' : ''}" style="flex:1" onclick="editTask(${idx})">${item.text}</span>
+                    <span class="${item.done ? 'completed' : ''}" style="flex:1" onclick="editTask(${idx})">
+                        ${overdue ? '<span class="overdue-label">逾期</span>' : ''}${item.text}
+                    </span>
                     <span onclick="deleteTask(${idx})" style="color:#CCC; cursor:pointer;">×</span>
                 </div>
-                ${item.due ? `<span class="due-tag">📅 截止: ${item.due}</span>` : ''}
+                ${item.due ? `<div class="due-tag">📅 截止: ${item.due}</div>` : ''}
             </div>
         `;
     }
@@ -284,19 +335,18 @@
         if (!text) return;
         todos.push({ text, type: currentTab, quad, date: selectedDateStr, due, done: false });
         document.getElementById('todoInput').value = '';
+        document.getElementById('dueInput').value = '';
         render(); syncToCloud();
     }
 
     function toggleDone(idx) { todos[idx].done = !todos[idx].done; render(); syncToCloud(); }
     function deleteTask(idx) { if(confirm('刪除？')) { todos.splice(idx,1); render(); syncToCloud(); } }
     function editTask(idx) { 
-        const v = prompt("修改:", todos[idx].text); 
+        const v = prompt("修改任務名稱:", todos[idx].text); 
         if(v) { todos[idx].text = v; render(); syncToCloud(); } 
     }
 
-    initCalendar();
-    render();
-    syncFromCloud();
+    initCalendar(); render(); syncFromCloud();
 </script>
 </body>
 </html>
